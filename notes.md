@@ -58,6 +58,7 @@ npm i @prisma/client
 ```
 npx prisma init
 ```
-* This will generate several files including a .env file (which contains a default postgres connection string) and a prisma directory in the root directory which has a schema file where we will declare our models (similar to GraphQL)
+* This will generate several files including a .env file (which contains a default postgres connection string that needs to be updated with the correct user, password, port, and database variables) and a prisma directory in the root directory which has a schema file where we will declare our models (similar to GraphQL)
     * Uses the prisma client js library and postgrest (but Prisma also supports MySQL and MongoDB)
     * The Url is the connection string which grabs the value from the first environment file it finds (here it's the .env in the root folder, but if there was a .dnv in the prisma folder, it would use that one)
+* The Prisma schema file uses Prisma syntax
