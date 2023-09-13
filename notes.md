@@ -75,3 +75,15 @@ npx prisma migrate dev
 ```
 npx prisma studio
 ```
+
+## Creating the Prisma Module
+* We are going to encapsulate all thel ogic required to connect the database to the application in a Prisma model
+```
+nest g module prisma
+```
+* Service files also need to be generated, but just running nest g service prisma will automatically generate spec (test) files, which aren't needed, so add the --no-spec flag
+```
+nest g service prisma --no-spec
+```
+* This module and service will allow Prisma to connect to the database
+    * You would have to export the Prisma service in the Prisma module so the remainder of the application has acess to it, and then in whichever module you would like to have access to the database, import the Prisma module and import it in the corresponding service
