@@ -33,3 +33,31 @@ nest g module <name-of-module>
 * Nest Js also converts the datatype in the headers of the response based on the datatype of the returned value
 * The controllers handle the request and return the body if needed - might check headers or any work required by the request - the execution is offloaded to the service
 * Usually the pattern is that there is a matching function in the service for each of the routes defined in the controller
+
+## Connecting a Containerized Database and ORM
+* In the root directory, create a docker-compose.yml file and use the following command to run the docker database container
+```
+docker compose up dev-db -d
+```
+* You can also check the status of the container by using the following command
+```
+docker logs <container-id>
+```
+* This tutorial uses postgres relational database and uses Prisma as the ORM
+    * Prisma is like a query builder where you define a model and you can get those models from your JS or TS code
+* Primsa will be used to define the database connection logic
+* Install Prisma CLI to create schemas, run migrations, and deploy migrations into the database
+```
+npm i prisma@latest --save-dev
+```
+* Install Prisma client - Prisma has many clients, so we're installing the one for JavaScript
+```
+npm i @prisma/client
+```
+* Once installed, initialize Prisma by running
+```
+npx prisma init
+```
+* This will generate several files including a .env file (which contains a default postgres connection string) and a prisma directory in the root directory which has a schema file where we will declare our models (similar to GraphQL)
+    * Uses the prisma client js library and postgrest (but Prisma also supports MySQL and MongoDB)
+    * The Url is the connection string which grabs the value from the first environment file it finds (here it's the .env in the root folder, but if there was a .dnv in the prisma folder, it would use that one)
