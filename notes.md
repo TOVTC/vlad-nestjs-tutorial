@@ -62,3 +62,16 @@ npx prisma init
     * Uses the prisma client js library and postgrest (but Prisma also supports MySQL and MongoDB)
     * The Url is the connection string which grabs the value from the first environment file it finds (here it's the .env in the root folder, but if there was a .dnv in the prisma folder, it would use that one)
 * The Prisma schema file uses Prisma syntax
+
+## Running Prisma Migrations
+* After creating the models in the schema file, run the following command
+```
+npx prisma migrate dev
+```
+* This will generate the migrations in the prisma folder
+    * The dev version of this command will delete the data, but there is another command that can be run for production to avoid this
+* The migrate dev command automatically runs the generate command (npx prisma generate - which creates Typescript types for the schema and allows us to directly use those types in our code) and also pushes the migrations to the database (can view it in the docker logs for the db container)
+* Prisma also provides a GUI, which can be initialized using
+```
+npx prisma studio
+```
