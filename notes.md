@@ -86,4 +86,7 @@ nest g module prisma
 nest g service prisma --no-spec
 ```
 * This module and service will allow Prisma to connect to the database
-    * You would have to export the Prisma service in the Prisma module so the remainder of the application has acess to it, and then in whichever module you would like to have access to the database, import the Prisma module and import it in the corresponding service
+    * The @Global() decorator and exporting the Prisma service in the Prisma module avoids having to import the Prisma module in the target module and services for each module you want to have access to the database - it would just be available to all the modules in the app (just make sure the global module is imported into the App module)
+
+## DTOs
+* DTOs are Data Transfer Objects - it's an object where you push your data (such as from a request) and you can run validation on it and can use the shape of those DTOs (because req.body for example is not descriptive of the data contained in the body)

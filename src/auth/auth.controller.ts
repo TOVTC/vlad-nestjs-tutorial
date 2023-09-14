@@ -1,17 +1,16 @@
-import { Controller, Post } from "@nestjs/common";
+import { Controller, Post, Req } from "@nestjs/common";
+import { Request } from 'express';
 import { AuthService } from "./auth.service";
 
-// it's good practice to add a global prefix route
+// it's good practice to add a global prefix route (here, it's 'auth')
 @Controller('auth')
 export class AuthController{
-    //     authService: AuthService;
-    //     constructor(authService: AuthService) {
-    //         this.authService = authService;
-    //     }
-    // the line below is shorhand for the code above
+    // the authService parameter is a shorthand for declaring authService as a property, then passing it in as an argument, then instantiating it using this.authService within the constructor
     constructor(private authService: AuthService) {}
     @Post('signup')
-    signup() {
+    // because Nest uses Express under the hood, you can expose and access it, such as in @Req() which is an Express Request object
+    signup(@Req() req: Request) {
+        console.log(req.body)
         return this.authService.signup()
     }
 
