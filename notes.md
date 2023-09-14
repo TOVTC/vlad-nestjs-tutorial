@@ -135,8 +135,18 @@ npm i argon2
     "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && npm run prisma:dev:deploy",
 ```
 
-## JWTs and Sessions
+## Config, JWTs, and Sessions
 * The existing login logic is known as simple authentication, which does allow verification of credentials, but would require the username and password to be sent with every APi request
 * For user experience, we want the user to only login once, to allow the server to track the user to knwo who the user is - there are two techniques: Sessions and JSON Web Tokens
-    * This process is called authentication and authorization - we authenticate the user when they provide credentials, but then we need to return something to the user so we can authroize that user through subsequent requests
+    * This process is called authentication and authorization - we authenticate the user when they provide credentials, but then we need to return something to the user so we can authorize that user through subsequent requests
 * We have thus far created our own modules, but Nest Js provides some out of the box modules for use
+* In this tutorial, we use the config module, which allows us to add a config file and avoid using our hard-coded database connection string
+```
+npm install @nestjs/config
+```
+* The config module is usually implemented in the root App module, but it can also be implemented in a custom module where you can add validation or custom type checking
+    * Under the hood, this module uses the dotenv library
+* To add it to the App module, include it in the import statement with the .forRoot({}) method
+    * Make sure to also set the property isGlobal to true within the forRoot() method so it is accessible across the app
+* Because this is just a pre-built module, it also has its own corresponding service which can be imported into other modules in our app (such as in the PrismaService service)
+    * The @Injectable() annotation allows for dependency injection to be handled by Prisma - if your class does not require any arguments to be passed in as a dependency, you don't need the decorator
