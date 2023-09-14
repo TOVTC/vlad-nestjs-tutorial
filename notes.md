@@ -71,7 +71,10 @@ npx prisma migrate dev
 * This will generate the migrations in the prisma folder
     * The dev version of this command will delete the data, but there is another command that can be run for production to avoid this
 * The migrate dev command automatically runs the generate command (npx prisma generate - which creates Typescript types for the schema and allows us to directly use those types in our code) and also pushes the migrations to the database (can view it in the docker logs for the db container)
-    * You also run this command to run existing migrations, if the database is not up to date
+* You also run this command to run existing migrations, if the database is not up to date, but this is the less recommended option, instead run the following command to apply all pending migrations in production/staging
+```
+prisma migrate deploy
+```
 * Prisma also provides a GUI, which can be initialized using
 ```
 npx prisma studio
@@ -114,5 +117,26 @@ npm i argon2
 
 ## Validation
 * You can use a combination of Prisma decorators and Nest Js Pipes to validate information as it is received and returned
-    * Nest Js Pipes can help validate data shapes and types
-    * Prisma decorators integrates database data validation and custom error objects/error messages
+    * Nest Js Pipes can help validate data shapes and types using DTOs and decorators
+    * Prisma has decorators that integrate database data validation (e.g. setting a unique property) and also provides custom error objects/error messages
+
+## Custom Scripts
+* This tutorial adds custom scripts to package.json to automate postgres restart and apply prisma migrations
+* prisma:dev:deploy will apply all pending migrations to the postgres database
+```
+    "prisma:dev:deploy": "prisma migrate deploy",
+```
+* db:dev:restart will remove the postgres container and then rebuild and restart it 
+    * -s is stop containers before removing, -f is force without confirming removal, -v is remove anonymous volumes attached to containers, -d is obviously start in detached mode
+* Because the database might take time to spin up, add one second of sleep or pause before running the prisma command to apply migrations to the database
+```
+    "db:dev:rm": "docker compose rm dev-db -s -f -v",
+    "db:dev:up": "docker compose up dev-db -d",
+    "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && npm run prisma:dev:deploy",
+```
+
+## JWTs and Sessions
+* The existing login logic is known as simple authentication, which does allow verification of credentials, but would require the username and password to be sent with every APi request
+* For user experience, we want the user to only login once, to allow the server to track the user to knwo who the user is - there are two techniques: Sessions and JSON Web Tokens
+    * This process is called authentication and authorization - we authenticate the user when they provide credentials, but then we need to return something to the user so we can authroize that user through subsequent requests
+* We have thus far created our own modules, but Nest Js provides some out of the box modules for use
