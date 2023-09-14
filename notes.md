@@ -89,4 +89,19 @@ nest g service prisma --no-spec
     * The @Global() decorator and exporting the Prisma service in the Prisma module avoids having to import the Prisma module in the target module and services for each module you want to have access to the database - it would just be available to all the modules in the app (just make sure the global module is imported into the App module)
 
 ## DTOs
+* Because Nest Js uses Express Js under the hood, you can access the Express request object directly, such as in @Req() req: Request - but directly accessing the request object is not best practice (because it's possible to change the underlying framework in the future, making the code non-reusable)
 * DTOs are Data Transfer Objects - it's an object where you push your data (such as from a request) and you can run validation on it and can use the shape of those DTOs (because req.body for example is not descriptive of the data contained in the body)
+* This tutorial uses the Barrel Export Pattern for DTOs, where the index.ts file re-exports specified exports from another file, which provides the main advantage of being able to import the dto folder itself, instead of including an import statement for each dto
+* This enforces structure, but it doesn't provide validation (i.e. if a specified property is not part of the body, it gets assigned its default value)
+
+## Pipes
+* "A pipe is a class annotated with the @Injectable() decorator, which implements the PipeTransform interface. Pipes have two typical use cases:
+    * transformation: transform input data to the desired form (e.g., from string to integer)
+    * validation: evaluate input data and if valid, simply pass it through unchanged; otherwise, throw an exception"
+* Pipes are functions that transform your data
+    * For example, you can use built in pipes to transform specific data fields to be other data types, automatically throwing an error if the data cannot be transformed, such as in @Body('password', ParseIntPipe) password: string, which isolates the password property of the request body and attempts to convert the string datatype to an int datatype
+* However, it becomes cumbersome to apply pipes to individual properties as they are received as arguments, so we can implement pipes directly in the DTO file instead (don't forget to set the .useGlobalPipes(new ValidationPipe()) property in main.ts)
+* This tutorial uses class validators and class transformers to implement pipes, run the following command to install
+```
+npm i --save class-validator class-transformer
+```
