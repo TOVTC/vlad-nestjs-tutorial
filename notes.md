@@ -71,6 +71,7 @@ npx prisma migrate dev
 * This will generate the migrations in the prisma folder
     * The dev version of this command will delete the data, but there is another command that can be run for production to avoid this
 * The migrate dev command automatically runs the generate command (npx prisma generate - which creates Typescript types for the schema and allows us to directly use those types in our code) and also pushes the migrations to the database (can view it in the docker logs for the db container)
+    * You also run this command to run existing migrations, if the database is not up to date
 * Prisma also provides a GUI, which can be initialized using
 ```
 npx prisma studio
@@ -105,3 +106,13 @@ nest g service prisma --no-spec
 ```
 npm i --save class-validator class-transformer
 ```
+* This allows the use of decorators to apply type validations and automatic error generation
+* This app also uses argon as its hashing package (as opposed to bcrypt because it allows for hasing of refresh tokens that are not limited to the first 72 characters)
+```
+npm i argon2
+```
+
+## Validation
+* You can use a combination of Prisma decorators and Nest Js Pipes to validate information as it is received and returned
+    * Nest Js Pipes can help validate data shapes and types
+    * Prisma decorators integrates database data validation and custom error objects/error messages

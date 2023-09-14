@@ -15,11 +15,18 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  email String
+  // the unique decorator prevents duplicate users from being registered
+  email String @unique
   hash String
 
   firstName String?
   lastName String?
+
+  // this array holds the bookmarks in the one to many relationship
+  bookmarks Bookmark[]
+
+  // the map decorator can rename tables - but it DROPS the table first (resulting in data loss)
+  @@map("users")
 }
 
 model Bookmark {
@@ -30,4 +37,12 @@ model Bookmark {
   title String
   description String?
   link String
+
+  // defines the one to many relationship between users and bookmarks
+  //foreign key
+  userId Int
+  // the userId field references the id field in the User table
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("bookmarks")
 }
