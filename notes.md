@@ -135,7 +135,7 @@ npm i argon2
     "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && npm run prisma:dev:deploy",
 ```
 
-## Config, JWTs, and Sessions
+## Config, JWT's, and Sessions
 * The existing login logic is known as simple authentication, which does allow verification of credentials, but would require the username and password to be sent with every APi request
 * For user experience, we want the user to only login once, to allow the server to track the user to knwo who the user is - there are two techniques: Sessions and JSON Web Tokens
     * This process is called authentication and authorization - we authenticate the user when they provide credentials, but then we need to return something to the user so we can authorize that user through subsequent requests
@@ -151,11 +151,11 @@ npm install @nestjs/config
 * Because this is just a pre-built module, it also has its own corresponding service which can be imported into other modules in our app (such as in the PrismaService service)
     * The @Injectable() annotation allows for dependency injection to be handled by Prisma - if your class does not require any arguments to be passed in as a dependency, you don't need the decorator
 * Nest Js has documentation on authentication and authorization, and under the hood uses Passport
-* Passport is an authenticaiton framework (middleware) for Node Js that has a lot of strategies
+* Passport is an authentication framework (middleware) for Node Js that has a lot of strategies
     * Lets you login with other accoutns, such as Facebook, Google, etc.
 * This tutorial just uses JWT's (which again, are basically strings with a signature, some data, and a description of kind of string it is and what algorithm it is using)
     * Within it is some JSON encoded in base 64 and includes some information that the server can pass to the client (e.g. username, email, expiration, etc.) and you can add as many fields (claims) as you want
-* The server creates this data when a suer logs in and passes that information back and forth between the client and the server each time a request is made to verify whether a user is authorized to access specific resources
+* The server creates this data when a user logs in and passes that information back and forth between the client and the server each time a request is made to verify whether a user is authorized to access specific resources
     * This is very similar to sessions, except with sessions,this information is passed automatically, whereas JWT's need to be passed manually with code
 * Install the packages for Nest Js passport (passport and the support packages for Nest to use passport)
 ```
@@ -169,3 +169,7 @@ npm install --save-dev @types/passport-jwt
 * @nestjs/jwt is basically used to sign and decode tokens (uses the JWT library under the hood - is basically a Nest Js modularization version of it)
 * The JwtModule is a Module, which means it also has a corresponding service, so make sure to import both
     * You can also add additional properties to the JwtModule when registering it, but in this tutorial it is left blank, so it is easier to customize secrets for example for different parts of the app
+* Authorizatin and authentication are separated into two parts: authorization (creating the JWT on login/signup) is included in the auth service, and authenticating that a user is allowed to access specific parts of our app (intercepting requests to retrieve and read JWTs) is part of the strategy
+* The steps for the strategy: a JWT access is generated and returned to a user upon signing in or signing up, another route is then called to retrieve information about the current user, an authorization/bearer token is then included in the header which acts as an access token
+    * The logic to verify that the bearer token is correct is called a strategy
+* The strategy protects some of our routes so that they are only accessible if you have a valid bearer token (implement the strategy using decorators)

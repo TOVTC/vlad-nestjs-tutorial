@@ -71,7 +71,7 @@ export class AuthService {
     }
 
     // function to create JWT
-    signToken(userId: number, email: string): Promise<string> {
+    async signToken(userId: number, email: string): Promise<{ access_token: string }> {
         // the object to be signed
         const payload = {
             // standard of the JWT convention taht you need to use a unique identifier for the sub field
@@ -80,10 +80,15 @@ export class AuthService {
         }
         const secret = this.config.get('JWT_SECRET');
         // method comes from the JWT package
-        return this.jwt.signAsync(payload, {
+        const token = await this.jwt.signAsync(payload, {
             // expires after 15 min
             expiresIn: '15m',
             secret: secret,
         });
+
+        // because Nest will automatically configure the data type in the repsonse header, explicitly return an object to avoid returning a plain string
+        return {
+            access_token: token,
+        }
     }
 }
