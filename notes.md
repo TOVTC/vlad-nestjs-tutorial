@@ -150,3 +150,22 @@ npm install @nestjs/config
     * Make sure to also set the property isGlobal to true within the forRoot() method so it is accessible across the app
 * Because this is just a pre-built module, it also has its own corresponding service which can be imported into other modules in our app (such as in the PrismaService service)
     * The @Injectable() annotation allows for dependency injection to be handled by Prisma - if your class does not require any arguments to be passed in as a dependency, you don't need the decorator
+* Nest Js has documentation on authentication and authorization, and under the hood uses Passport
+* Passport is an authenticaiton framework (middleware) for Node Js that has a lot of strategies
+    * Lets you login with other accoutns, such as Facebook, Google, etc.
+* This tutorial just uses JWT's (which again, are basically strings with a signature, some data, and a description of kind of string it is and what algorithm it is using)
+    * Within it is some JSON encoded in base 64 and includes some information that the server can pass to the client (e.g. username, email, expiration, etc.) and you can add as many fields (claims) as you want
+* The server creates this data when a suer logs in and passes that information back and forth between the client and the server each time a request is made to verify whether a user is authorized to access specific resources
+    * This is very similar to sessions, except with sessions,this information is passed automatically, whereas JWT's need to be passed manually with code
+* Install the packages for Nest Js passport (passport and the support packages for Nest to use passport)
+```
+npm install -- save @nestjs/passport passport
+```
+* In addition, install JWT-specific libraries including JWT, Nest support for JWT's, and the types for JWT
+```
+npm install --save @nestjs/jwt passport-jwt
+npm install --save-dev @types/passport-jwt
+```
+* @nestjs/jwt is basically used to sign and decode tokens (uses the JWT library under the hood - is basically a Nest Js modularization version of it)
+* The JwtModule is a Module, which means it also has a corresponding service, so make sure to import both
+    * You can also add additional properties to the JwtModule when registering it, but in this tutorial it is left blank, so it is easier to customize secrets for example for different parts of the app

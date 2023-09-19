@@ -3,10 +3,14 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { AuthDto } from "./dto";
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class AuthService {
-    constructor(private prisma: PrismaService) {}
+    // use dependency injection to import the PrismaService
+    // don't forget to also import the JWT auth service
+    constructor(private prisma: PrismaService, private jwt: JwtService, private config: ConfigService) {}
     async signup(dto: AuthDto) {
         try {
             // generate password hash
@@ -19,10 +23,11 @@ export class AuthService {
                 },
                 // you can use the select: {} property to specify whether each data property should be returned using a boolean
             });
-            // prevents the hash from being returned
-            delete user.hash;
-            // return the saved user
-            return user;
+            // prevents the hash from being returned (but not necessary unless you are returning the user)
+            // delete user.hash;
+
+            // return the signed in user's JWT
+            return this.signToken(user.id, user.email);
         // use catch function to return descriptive error messages and codes
         } catch (error) {
             // check if the error being generated originates from Prisma
@@ -62,8 +67,23 @@ export class AuthService {
                 'Credentials incorrect'
             );
         }
-        // send back the user without the hashed password
-        delete user.hash
-        return {msg: 'I have signed in'};
+        return this.signToken(user.id, user.email);
+    }
+
+    // function to create JWT
+    signToken(userId: number, email: string): Promise<string> {
+        // the object to be signed
+        const payload = {
+            // standard of the JWT convention taht you need to use a unique identifier for the sub field
+            sub: userId,
+            email
+        }
+        const secret = this.config.get('JWT_SECRET');
+        // method comes from the JWT package
+        return this.jwt.signAsync(payload, {
+            // expires after 15 min
+            expiresIn: '15m',
+            secret: secret,
+        });
     }
 }
