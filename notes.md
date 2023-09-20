@@ -135,11 +135,13 @@ npm i argon2
     "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && npm run prisma:dev:deploy",
 ```
 
-## Config, JWT's, and Sessions
+## Config, JWT's, and Guards
 * The existing login logic is known as simple authentication, which does allow verification of credentials, but would require the username and password to be sent with every APi request
 * For user experience, we want the user to only login once, to allow the server to track the user to knwo who the user is - there are two techniques: Sessions and JSON Web Tokens
     * This process is called authentication and authorization - we authenticate the user when they provide credentials, but then we need to return something to the user so we can authorize that user through subsequent requests
 * We have thus far created our own modules, but Nest Js provides some out of the box modules for use
+
+### Config
 * In this tutorial, we use the config module, which allows us to add a config file and avoid using our hard-coded database connection string
 ```
 npm install @nestjs/config
@@ -153,6 +155,8 @@ npm install @nestjs/config
 * Nest Js has documentation on authentication and authorization, and under the hood uses Passport
 * Passport is an authentication framework (middleware) for Node Js that has a lot of strategies
     * Lets you login with other accoutns, such as Facebook, Google, etc.
+
+### JWTs
 * This tutorial just uses JWT's (which again, are basically strings with a signature, some data, and a description of kind of string it is and what algorithm it is using)
     * Within it is some JSON encoded in base 64 and includes some information that the server can pass to the client (e.g. username, email, expiration, etc.) and you can add as many fields (claims) as you want
 * The server creates this data when a user logs in and passes that information back and forth between the client and the server each time a request is made to verify whether a user is authorized to access specific resources
@@ -173,3 +177,11 @@ npm install --save-dev @types/passport-jwt
 * The steps for the strategy: a JWT access is generated and returned to a user upon signing in or signing up, another route is then called to retrieve information about the current user, an authorization/bearer token is then included in the header which acts as an access token
     * The logic to verify that the bearer token is correct is called a strategy
 * The strategy protects some of our routes so that they are only accessible if you have a valid bearer token (implement the strategy using decorators)
+
+### Guards
+* Guards are used to verify whether a users is authorized to access specific resources and to handle what occurs when an authorized or unauthorized request is sent
+    * "They determine whether a given request will be handled by the route handler or not, depending on certain conditions (like permissions, roles, ACLs, etc.) present at run-time."
+* Guards are functions that will stand in front of a route handler/an endpoint and will or disallow the execution of the endpoint
+    * In our case, the guard will check for the strategy and if the JWT strategy is correct, it will allow execution of the route, if not, it will block it
+    * You can write custom guards or use pre-made guards from the Nest Js passport module
+* You can implement guards on a global/controller level or you can use it at the route level using the @UseGuards() decorator
